@@ -15,8 +15,22 @@ def create(line: int = 0, data: dict = {}) -> str:
             yield line_create()
 
 def download_data():
+    from urllib import error
     from urllib.request import urlopen
-    data_web = urlopen('https://raw.github.com/Expector-Hutch/e-poets/main/data.json')
+    try:
+        data_web = urlopen('https://raw.githubusercontent.com/Expector-Hutch/e-poets/main/data.json')
+    except error.HTTPError as e:
+        print(f'链接网络数据失败，错误码{e.code}')
+        exit(e.code)
+    if data_web.status == 200:
+        print('已链接到网络数据...', end='')
+    data_local = open('./data.json', 'wb')
+    data = data_web.read()
+    print('\r已完成数据读取...        ', end='')
+    data_local.write(data)
+    print('\r数据保存完成，正在等待关闭...', end='')
+    data_local.close()
+    print('\r🉐词库数据恢复成功!          ')
 
 def main(line=0):
     try:
@@ -25,6 +39,8 @@ def main(line=0):
     except FileNotFoundError:
         if input("找不到词库(>﹏<)\n是否从互联网上下载词库文件？\n(y/N) ") == 'y':
             download_data()
+        else:
+            exit(-1)
 
     for stc in create(line, data):
         print(stc)
@@ -33,15 +49,18 @@ if __name__ == '__main__':
     from sys import argv
     import getopt
     help_text = '''
-命令格式：e-poet [-h]|[help] [-l]|[--line] <line>
+命令格式：e-poet [-h]|[help] [-r]|[--restore] [-l]|[--line] <line>
     -h/help: 获取帮助
+    -r/--restore: 恢复词库数据
     -l/--line <line>: 写诗行数（默认随机）
     '''
-    opts, args = getopt.getopt(argv[1:], 'hl:', ['help', 'line='])
+    opts, args = getopt.getopt(argv[1:], 'hrl:', ['help', 'restore', 'line='])
     for arg in args:
         if arg == 'help':
             print(help_text)
+            exit()
     for opt, arg in opts:
         if opt in ('-l', '--line'):
             main(line=int(arg))
-    main()
+        elif opt in ('-r', '--restore'):
+            download_data()
