@@ -11,7 +11,7 @@ def create(line: int = 0, data: dict = {}) -> str:
                 sentence = sentence.replace(sign,
                     random.choice(data['words'][sign]), 1)
         return sentence
-    for t in range(line if line > 0 else random.randint(3, 33)):
+    for t in range(line):
             yield line_create()
 
 def download_data():
@@ -49,14 +49,14 @@ if __name__ == '__main__':
     from sys import argv
     import getopt
     help_text = '''
-命令格式：e-poet [-h]|[help] [-r]|[--restore] [-l]|[--line] <line>
-    -h/help: 获取帮助
+命令格式：e-poet [h]|[help] [-r]|[--restore] [-l]|[--line] <line>
+    h/help: 获取帮助
     -r/--restore: 恢复词库数据
-    -l/--line <line>: 写诗行数（默认随机）
+    -l/--line <line>: 写诗行数
     '''
     opts, args = getopt.getopt(argv[1:], 'hrl:', ['help', 'restore', 'line='])
     for arg in args:
-        if arg == 'help':
+        if arg in ('h', 'help'):
             print(help_text)
             exit()
     for opt, arg in opts:
