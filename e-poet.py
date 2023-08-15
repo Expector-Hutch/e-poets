@@ -34,7 +34,7 @@ def download_data():
 
 def main(line=0):
     try:
-        with open("data.json", 'r') as f:
+        with open("data.json", 'r', encoding="utf-8") as f:
             data = json.load(f)
     except FileNotFoundError:
         if input("找不到词库(>﹏<)\n是否从互联网上下载词库文件？\n(y/N) ") == 'y':
